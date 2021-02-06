@@ -12,3 +12,11 @@ bevy = "0.4"
 [[bin]]
 name = "tutorial01"
 path = "src/tutorial01.rs"
+
+[[bin]]
+name = "tutorial02"
+path = "src/tutorial02.rs"
+
+[[bin]]
+name = "tutorial03"
+path = "src/tutorial03.rs"
