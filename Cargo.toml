@@ -28,3 +28,7 @@ path = "src/tutorial04.rs"
 [[bin]]
 name = "tutorial05"
 path = "src/tutorial05.rs"
+
+[[bin]]
+name = "tutorial06"
+path = "src/tutorial06/tutorial06.rs"
