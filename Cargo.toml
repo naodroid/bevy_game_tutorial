@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 bevy = "0.4"
+rand = "0.8.3"
 
 [[bin]]
 name = "tutorial01"
@@ -32,3 +33,7 @@ path = "src/tutorial05.rs"
 [[bin]]
 name = "tutorial06"
 path = "src/tutorial06/tutorial06.rs"
+
+[[bin]]
+name = "tutorial07"
+path = "src/tutorial07/tutorial07.rs"
