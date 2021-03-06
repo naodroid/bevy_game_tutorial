@@ -32,14 +32,14 @@ fn spawn_enemy_system(
     }
     global_state.frames_to_next_enemy = 90; //1.5sec
 
-    let playerTr = player.iter().next().unwrap();
+    let player_tr = player.iter().next().unwrap();
     let window = windows.iter().next().unwrap();
     let win_w = window.width();
     let win_h = window.height();
     //
     commands.spawn(SpriteBundle {
         material: materials.add(asset_server.load("circle.png").into()),
-        transform: create_enemy_position(&playerTr, win_w, win_h),
+        transform: create_enemy_position(&player_tr, win_w, win_h),
         sprite: Sprite::new(Vec2::new(30.0, 30.0)),
         ..Default::default()
     }).with(
@@ -49,28 +49,26 @@ fn spawn_enemy_system(
 fn create_enemy_position(player_transform: &Transform, win_w: f32, win_h: f32) -> Transform {
     let px = player_transform.translation.x;
     let py = player_transform.translation.y;
-    let mut x: f32 = 0.0;
-    let mut y: f32 = 0.0;
-    while (true) {
-        x = random::<f32>() * win_w - win_w / 2.;
-        y = random::<f32>() * win_h - win_h / 2.;
+
+    loop {
+        let x = random::<f32>() * win_w - win_w / 2.;
+        let y = random::<f32>() * win_h - win_h / 2.;
         //avoid near place from player, to avoid immediate-collision
         let dx = px - x;
         let dy = py - y;
         if dx * dx + dy * dy >= 400.0 {
-            break;
+            return Transform::from_translation(Vec3 {x: x, y: y, z: 0.});
         }
     }
-    Transform::from_translation(Vec3 {x: x, y: y, z: 0.})
 }
 
 fn move_enemy_system(
     mut enemies: Query<&mut Transform, With<Enemy>>,
     player: Query<&Transform, With<PlayerShip>>,
 ) {
-    let playerTr = player.iter().next().unwrap();
-    let px = playerTr.translation.x;
-    let py = playerTr.translation.y;
+    let player_tr = player.iter().next().unwrap();
+    let px = player_tr.translation.x;
+    let py = player_tr.translation.y;
     for mut enemy in enemies.iter_mut() {
         let ex = enemy.translation.x;
         let ey = enemy.translation.y;

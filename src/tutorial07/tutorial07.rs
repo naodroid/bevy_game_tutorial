@@ -4,16 +4,16 @@ mod player_ship_plugin;
 mod bullet_plugin;
 mod components;
 mod enemy_plugin;
+mod collision_plugin;
 
 use player_ship_plugin::PlayerShipPlugin;
 use bullet_plugin::BulletPlugin;
 use crate::enemy_plugin::EnemyPlugin;
+use crate::collision_plugin::CollisionPlugin;
 
 //
 fn setup(
     commands: &mut Commands,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    asset_server: ResMut<AssetServer>,
 ) {
     commands
         .spawn(Camera2dBundle::default());
@@ -33,6 +33,7 @@ fn main() {
         .add_plugin(PlayerShipPlugin)
         .add_plugin(BulletPlugin)
         .add_plugin(EnemyPlugin)
+        .add_plugin(CollisionPlugin)
         .add_startup_system(setup.system())
         .run();
 }
