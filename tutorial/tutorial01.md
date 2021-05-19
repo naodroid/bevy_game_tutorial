@@ -33,7 +33,7 @@ Bevy is 2D and 3D game engine (Like Unity). Before I choose Bevy, I compared som
   * Similar to Amethyst, but lighter.
   * Newer than others
   * Less documents
-  * 6.5k stars
+  * 9.2k stars in Github
 
 The reason I choose Bevy was bevy's ECS-structure and fast build time. Many Github-Stars was also the reason.
 
@@ -45,7 +45,7 @@ To use bevy is simple and same as other rust framework.  Only to add dependencie
 
 ```toml
 [dependencies]
-bevy = "0.4"
+bevy = "0.5"
 ```
 
 If you use windows 10, you need to install [VS2019 build tools](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=BuildTools&rel=16)  (I forgot this process at first!).
@@ -109,7 +109,7 @@ To adjust window size, add `WindowDescriptor`.
 fn main() {
     App::build()
         //add this    
-        .add_resource(WindowDescriptor {
+        .insert_resource(WindowDescriptor {
             title: "Game Title".to_string(),
             width: 480.0,
             height: 320.0,
@@ -117,7 +117,7 @@ fn main() {
             ..Default::default()
         })
         .add_plugins(DefaultPlugins)
-        .add_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
+        .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
         .run();
 }
 ```
@@ -164,15 +164,13 @@ fn setup(
     mut materials: ResMut<Assets<ColorMaterial>>,
     asset_server: ResMut<AssetServer>,
 ) {
-    commands
-        //add 2D Camera    
-        .spawn(Camera2dBundle::default())
-        .spawn(SpriteBundle {
+  commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+  commands.spawn_bundle(SpriteBundle {
             material: materials.add(asset_server.load("triangle.png").into()),
             transform: Transform::identity(),
             sprite: Sprite::new(Vec2::new(80.0, 80.0)),
             ..Default::default()
-        });
+          });
 }
 ```
 
@@ -192,7 +190,7 @@ You also have to add following line to call `setup` function in `main`.
 
 ```rust
       .add_plugins(DefaultPlugins)
-      .add_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
+      .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
       .add_startup_system(setup.system()) //add this line
       .run();
 ```

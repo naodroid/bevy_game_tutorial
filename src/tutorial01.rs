@@ -1,13 +1,14 @@
 use bevy::prelude::*;
 
 fn setup(
-    commands: &mut Commands,
+    mut commands: Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
     asset_server: ResMut<AssetServer>,
 ) {
     commands
-        .spawn(Camera2dBundle::default())
-        .spawn(SpriteBundle {
+        .spawn_bundle(OrthographicCameraBundle::new_2d());
+    commands
+        .spawn_bundle(SpriteBundle {
             material: materials.add(asset_server.load("triangle.png").into()),
             transform: Transform::identity(),
             sprite: Sprite::new(Vec2::new(80.0, 80.0)),
@@ -17,7 +18,7 @@ fn setup(
 
 fn main() {
     App::build()
-        .add_resource(WindowDescriptor {
+        .insert_resource(WindowDescriptor {
             title: "Game Title".to_string(),
             width: 480.0,
             height: 320.0,
@@ -25,7 +26,7 @@ fn main() {
             ..Default::default()
         })
         .add_plugins(DefaultPlugins)
-        .add_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
+        .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
         .add_startup_system(setup.system())
         .run();
 }
