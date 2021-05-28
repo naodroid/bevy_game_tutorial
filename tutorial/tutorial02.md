@@ -43,12 +43,12 @@ struct Enemy {
 
 ```rust
 //Player
-spawn((
+spawn_bundle((
   Position::default(),
   Player { name: "Bevy" }
 ))
 //Enemy
-spawn((
+spawn_bundle((
   Position::default(),
   Enemy { category : 1 }
 ))
@@ -69,20 +69,12 @@ final class Player implements IPosition, IPlayer {
 
 In ECS the class is not needed. This makes code simple and more flexible. Let's see `System`
 
-> Usually more than 2-components are required to spawn.
+> Usually more than 2-components are required to spawn_bundle.
 > ```rust
 > struct A(i32);
 > strutc B(i32);
-> spawn(A(0)); //can't build
-> spawn((A(0), B(1))) //OK
-> ```
-> 
-> but with adding `Bundle` simple-component is allowed.
-> 
-> ```rust
-> #[derive(Bundle)]
-> struct C(i32);
-> spawn(C(0)) //OK
+> spawn_bundle(A(0)); //can't build
+> spawn_bundle((A(0), B(1))) //OK
 > ```
 
 --------------------------------
@@ -146,13 +138,16 @@ And spawn them.
 ```rust
 //
 fn setup(
-    commands: &mut Commands,
+    mut commands: Commands,
 ) {
     commands
-        .spawn((Block, Position(1)))
-        .spawn((Block, Position(10)))
-        .spawn((Wall, Position(5)))
-        .spawn((Wall, Position(20)));
+        .spawn_bundle((Block, Position(1)));
+    commands
+        .spawn_bundle((Block, Position(10)));
+    commands
+        .spawn_bundle((Wall, Position(5)));
+    commands
+        .spawn_bundle((Wall, Position(20)));
 }
 
 fn main() {
@@ -211,7 +206,7 @@ But this code run only once. Add ScheduleRunner to do so.
 fn main() {
     App::build()
         //run every second
-        .add_resource(ScheduleRunnerSettings {
+        .insert_resource(ScheduleRunnerSettings {
             run_mode: RunMode::Loop { wait: Some(Duration::from_secs(1)) }
         })
         .add_plugin(ScheduleRunnerPlugin::default())
@@ -262,7 +257,7 @@ We can create collision detection but can't remove blocks!! To do this `Commands
 
 ```rust
 fn collision_system(
-    commands: &mut Commands,
+    mut commands: Commands,
     blocks: Query<&Position, With<Block>>,
     walls: Query<&Position, With<Walll>>
 ) {
@@ -281,14 +276,14 @@ And the all of the function is like this.
 
 ```rust
 fn collision_system(
-    commands: &mut Commands,
+    mut commands: Commands,
     blocks: Query<(Entity, &Position), With<Block>>,
     walls: Query<&Position, With<Wall>>
 ) {
     for (block_entity, block_pos) in blocks.iter() {
         for wall_pos in walls.iter() {
             if block_pos.0 == wall_pos.0 {
-                commands.despawn(block_entity);
+                commands.entity(block_entity).despawn();
             }
         }
     }
