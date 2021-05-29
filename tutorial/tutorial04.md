@@ -10,14 +10,15 @@ First of all we need to create a texture in the way I introduced in chater 1.
 struct PlayerShip;
 
 fn setup(
-    commands: &mut Commands,
+    mut commands: Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
     asset_server: ResMut<AssetServer>,
 ) {
     commands
         //add 2D Camera    
-        .spawn(Camera2dBundle::default())
-        .spawn(SpriteBundle {
+        .insert_bundle(OrthographicCameraBundle::new_2d());
+    commands
+        .insert_bundle(SpriteBundle {
             material: materials.add(asset_server.load("triangle.png").into()),
             transform: Transform::identity(),
             sprite: Sprite::new(Vec2::new(80.0, 80.0)),
@@ -57,11 +58,10 @@ To follow cursor, it requires `Event` we learned in chapter 3. Add `Event` and `
 ```rust
 fn follow_cursor_system(
     mut query: Query<&mut Transform, With<PlayerShip>>,
-    events: Res<Events<CursorMoved>>,
-    mut reader: Local<EventReader<CursorMoved>>
+    mut events: EventReader<CursorMoved>,
 ) {
     //read mouse position
-    if let Some(value) = reader.iter(&events).last() {
+    if let Some(value) = events.iter().last() {
         for mut tr in query.iter_mut() {
             tr.translation.x = value.position.x;
             tr.translation.y = value.position.y;
@@ -89,12 +89,11 @@ To know window size, we have to retrieve *Windows* in the system with using `Res
 ```rust
 fn follow_cursor_system(
     mut query: Query<&mut Transform, With<PlayerShip>>,
-    events: Res<Events<CursorMoved>>,
-    mut reader: Local<EventReader<CursorMoved>>,
+    mut events: EventReader<CursorMoved>,
     windows: Res<Windows>, //Add this
 ) {
     let window = windows.iter().next().unwrap();
-    if let Some(value) = reader.iter(&events).last() {
+    if let Some(value) = events.iter().last() {
         for mut tr in query.iter_mut() {
             //subtract half of the window size 
             tr.translation.x = value.position.x - window.width() / 2.0;
@@ -128,12 +127,11 @@ And change the target_x/y values in the event system.
 ```rust
 fn follow_cursor_system(
     mut query: Query<&mut PlayerShip>, //Change Transform to Player
-    events: Res<Events<CursorMoved>>,
-    mut reader: Local<EventReader<CursorMoved>>,
+    mut events: EventReader<CursorMoved>,
     windows: Res<Windows>,
 ) {
     let window = windows.iter().next().unwrap();
-    if let Some(value) = reader.iter(&events).last() {
+    if let Some(value) = events.iter().last() {
         for mut player in query.iter_mut() {
             //Update player's target
             player.target_x = value.position.x - window.width() / 2.0;
@@ -150,8 +148,8 @@ fn move_player_system(
     mut query: Query<(&mut Transform, &PlayerShip)>
 ) {
     for (mut tr, player) in query.iter_mut() {
-        let current = Vec2 { x: tr.translation.x, y: tr.translation.y };
-        let target = Vec2 { x: player.target_x, y: player.target_y };
+        let current = Vec2::new(tr.translation.x, tr.translation.y);
+        let target = Vec2::new(player.target_x, player.target_y);
         let diff = target - current;
         if diff.length() >= 1.0 {
             let mv = diff.normalize();
@@ -181,7 +179,7 @@ To calculate angle use `angle_between` and `Quat`.
 
 ```rust
 //add these lines after move translation.
-let y_axis = Vec2 { x: 0.0, y: 1.0 };
+let y_axis = Vec2::new(0.0, 1.0);
 let angle = y_axis.angle_between(diff);
 tr.rotation = Quat::from_rotation_z(angle);
 ```
