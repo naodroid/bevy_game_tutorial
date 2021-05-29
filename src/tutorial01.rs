@@ -5,10 +5,9 @@ fn setup(
     mut materials: ResMut<Assets<ColorMaterial>>,
     asset_server: ResMut<AssetServer>,
 ) {
-    commands
-        .spawn_bundle(OrthographicCameraBundle::new_2d());
-    commands
-        .spawn_bundle(SpriteBundle {
+    commands.spawn()
+        .insert_bundle(OrthographicCameraBundle::new_2d())
+        .insert_bundle(SpriteBundle {
             material: materials.add(asset_server.load("triangle.png").into()),
             transform: Transform::identity(),
             sprite: Sprite::new(Vec2::new(80.0, 80.0)),

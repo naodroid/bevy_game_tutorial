@@ -12,14 +12,11 @@ struct Position(i32);
 fn setup(
     mut commands: Commands,
 ) {
-    commands
-        .spawn_bundle((Block, Position(1)));
-    commands
-        .spawn_bundle((Block, Position(10)));
-    commands
-        .spawn_bundle((Wall, Position(5)));
-    commands
-        .spawn_bundle((Wall, Position(20)));
+    commands.spawn()
+        .insert_bundle((Block, Position(1)))
+        .insert_bundle((Block, Position(10)))
+        .insert_bundle((Wall, Position(5)))
+        .insert_bundle((Wall, Position(20)));
 }
 fn print_system(
     query: Query<&Position, With<Block>>

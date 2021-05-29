@@ -18,10 +18,9 @@ use bevy::window::CursorMoved;
 
 //
 fn mouse_event_system(
-    cursor_moved_events: Res<Events<CursorMoved>>,
-    mut cursor_moved_reader: Local<EventReader<CursorMoved>>,
+    mut events: EventReader<CursorMoved>,
 ) {
-    for ev in cursor_moved_reader.iter(&cursor_moved_events) {
+    for ev in cursor_moved_events.iter() {
         println!("CURSOR_MOVED: {:?}", ev.position);
     }
 }
@@ -41,10 +40,9 @@ Click Event can be read in the same way.
 
 ```rust
 fn mouse_click_system(
-    events: Res<Events<MouseButtonInput>>,
-    mut reader: Local<EventReader<MouseButtonInput>>
+    mut events: EventReader<MouseButtonInput>,
 ) {
-    for ev in reader.iter(&events) {
+    for ev in events.iter() {
         match (ev.button, ev.state.is_pressed()) {
             (MouseButton::Left, true) => println!("LeftClick!"),
             (MouseButton::Left, false) => println!("Left Released"),
@@ -62,7 +60,7 @@ fn mouse_click_system(
 Sometime you want to check whether the button is pressing or not *at every frame*. In this case, Event Driven pattern is bothering, you need to hold bool value(pressing or not) in yourown.
 
 ```rust
-fn mouse_state_system(input: Res<Input<MouseButton>>) {
+fn mouse_state_system(input: EventReader<MouseButton>) {
     if input.pressed(MouseButton::Left) {
         println!("MouseState:Pressed-Left");
     }
@@ -79,10 +77,9 @@ Checking keyboard is as same as mouse. Event and State are available.
 ```rust
 // Keyboard
 fn keyboard_event_system(
-    key_events: Res<Events<KeyboardInput>>,
-    mut key_reader: Local<EventReader<KeyboardInput>>
+    mut events: EventReader<KeyboardInput>,
 ) {
-    for ev in key_reader.iter(&key_events) {
+    for ev in events.iter() {
         match (ev.key_code, ev.state.is_pressed()) {
             (Some(KeyCode::Space), true) => println!("Pressed"),
             (Some(KeyCode::Space), false) => println!("Releaed"),
@@ -109,7 +106,7 @@ struct GameOverEvent;
 
 fn send_game_over_event_system(
     input: Res<Input<MouseButton>>,
-    mut events: ResMut<Events<GameOverEvent>>,
+    mut events: EventWriter<GameOverEvent>,
 ) {
     //send original event when left button pressed
     if input.just_pressed(MouseButton::Left) {
@@ -118,10 +115,9 @@ fn send_game_over_event_system(
     }
 }
 fn game_over_event_system(
-    events: Res<Events<GameOverEvent>>,
-    mut reader: Local<EventReader<GameOverEvent>>
+    mut events: EventReader<GameOverEvent>
 ) {
-    for _ in reader.iter(&events) {
+    for _ in events.iter() {
         println!("GameOver!")
     }
 }
