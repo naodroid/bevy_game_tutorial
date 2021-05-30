@@ -18,14 +18,16 @@ It's simple because `Spirte` has the position of the bullet. All we have to do i
 The code for making a bullet is
 
 ```rust
-commands.spawn(
+commands
+  .spawn()
+  .insert_bundle(
     SpriteBundle {
-        material: materials.add(asset_server.load("elipse.png").into()),
-        transform: Transform::default(),
-        sprite: Sprite::new(Vec2::new(10.0, 20.0)),
-        ..Default::default()
-    }).with(
-        Bullet
+      material: materials.add(asset_server.load("elipse.png").into()),
+      transform: tr,
+      sprite: Sprite::new(Vec2::new(10.0, 20.0)),
+      ..Default::default()
+    }).insert(
+      Bullet
     );
 ```
 
@@ -51,8 +53,9 @@ The parameters of the function will be
 
 ```rust
 fn fire_bullet_system(
-    commands: &mut Commands,
+    mut commands: Commands,
     player: Query<&Transform, With<PlayerShip>>,
+    mut gun_state: ResMut<GunState>,
     input: Res<Input<MouseButton>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     asset_server: ResMut<AssetServer>,
@@ -64,15 +67,17 @@ and spawn the bullet texture at the player's position.
 ```rust
 let player_transform = player.iter().next().unwrap();
 let tr = *player_transform;
-commands.spawn(
-    SpriteBundle {
-        material: materials.add(asset_server.load("elipse.png").into()),
-        transform: tr,
-        sprite: Sprite::new(Vec2::new(10.0, 20.0)),
-        ..Default::default()
-    }).with(
-    Bullet
-);
+commands
+    .spawn()
+    .insert_bundle(
+        SpriteBundle {
+            material: materials.add(asset_server.load("elipse.png").into()),
+            transform: tr,
+            sprite: Sprite::new(Vec2::new(10.0, 20.0)),
+            ..Default::default()
+        }).insert(
+            Bullet
+        );
 ```
 
 Now you can see bullets when `left-click`, like this.
@@ -113,7 +118,7 @@ We need to add some parameters like `left-click`
 
 ```rust
 fn move_bullet_system(
-    commands: &mut Commands,
+    mut commands: Commands,
     mut bullets: Query<(Entity, &mut Transform), With<Bullet>>,
     windows: Res<Windows>,
 ) {
@@ -182,7 +187,7 @@ Ok, let's change the fire-bullet system. Firing every 5 frames.
 
 ```rust
 fn fire_bullet_system(
-    commands: &mut Commands,
+    mut commands: Commands,
     player: Query<&Transform, With<PlayerShip>>,
     mut gun_state: ResMut<GunState>,
     input: Res<Input<MouseButton>>,
