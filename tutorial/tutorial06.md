@@ -28,7 +28,7 @@ This is a common Rust-way,  butin Bevy we can bundle the system as `Plugin`.
 
 Now let's see the source code of bevy's simple plugin to know what `Plugin` is. In this tutorial I'll use `CorePlugin` which is simple and includes basic functions.
 
-[CorePlugin source - 0.4.0](https://docs.rs/bevy_core/0.4.0/src/bevy_core/lib.rs.html#25)
+[CorePlugin source - 0.5.0](https://docs.rs/bevy_core/0.5.0/src/bevy_core/lib.rs.html#25)
 
 --------------
 

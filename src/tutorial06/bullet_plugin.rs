@@ -3,7 +3,7 @@ use crate::components::{PlayerShip, GunState, Bullet};
 
 //
 fn fire_bullet_system(
-    commands: &mut Commands,
+    mut commands: Commands,
     player: Query<&Transform, With<PlayerShip>>,
     mut gun_state: ResMut<GunState>,
     input: Res<Input<MouseButton>>,
@@ -14,13 +14,15 @@ fn fire_bullet_system(
         if input.pressed(MouseButton::Left) {
             let player_transform = player.iter().next().unwrap();
             let tr = *player_transform;
-            commands.spawn(
+            commands
+                .spawn()
+                .insert_bundle(
                 SpriteBundle {
                     material: materials.add(asset_server.load("elipse.png").into()),
                     transform: tr,
                     sprite: Sprite::new(Vec2::new(10.0, 20.0)),
                     ..Default::default()
-                }).with(
+                }).insert(
                 Bullet
             );
         }
@@ -31,7 +33,7 @@ fn fire_bullet_system(
 }
 
 fn move_bullet_system(
-    commands: &mut Commands,
+    mut commands: Commands,
     mut bullets: Query<(Entity, &mut Transform), With<Bullet>>,
     windows: Res<Windows>,
 ) {
@@ -50,7 +52,7 @@ fn move_bullet_system(
 
         //despawn it if outside of the window
         if tr.x < -win_w || tr.x > win_w || tr.y < -win_h || tr.y > win_h {
-            commands.despawn(entity);
+            commands.entity(entity).despawn();
         }
     }
 }
@@ -60,7 +62,7 @@ pub struct BulletPlugin;
 
 impl Plugin for BulletPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app.add_resource(GunState::default())
+        app.insert_resource(GunState::default())
             .add_system(fire_bullet_system.system())
             .add_system(move_bullet_system.system());
     }
