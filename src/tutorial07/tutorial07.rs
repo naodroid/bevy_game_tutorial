@@ -13,16 +13,17 @@ use crate::collision_plugin::CollisionPlugin;
 
 //
 fn setup(
-    commands: &mut Commands,
+    mut commands: Commands,
 ) {
     commands
-        .spawn(Camera2dBundle::default());
+        .spawn()
+        .insert_bundle(OrthographicCameraBundle::new_2d());
 }
 
 //
 fn main() {
     App::build()
-        .add_resource(WindowDescriptor {
+        .insert_resource(WindowDescriptor {
             title: "Game Title".to_string(),
             width: 480.0,
             height: 320.0,

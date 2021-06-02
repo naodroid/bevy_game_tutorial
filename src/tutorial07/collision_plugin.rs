@@ -3,12 +3,15 @@ use crate::components::{PlayerShip, GunState, Bullet, Enemy};
 
 
 fn bullet_enemy_collision_system(
-    commands: &mut Commands,
-    bullets: Query<(Entity, &Transform), With<Bullet>>,
-    enemies: Query<(Entity, &Transform), With<Enemy>>
+    mut commands: Commands,
+    queries: QuerySet<(
+        Query<(Entity, &Transform), With<Bullet>>,
+        Query<(Entity, &Transform), With<Enemy>>
+    )>
 ) {
     let mut hit_enemy_ids: Vec<u32> = Vec::new();
-
+    let bullets = queries.q0();
+    let enemies = queries.q1();
     for (b_entity, b_tr) in bullets.iter() {
         for (e_entity, e_tr) in enemies.iter() {
             //if already the enemy was used, not check
@@ -20,8 +23,8 @@ fn bullet_enemy_collision_system(
             let diff = b_tr.translation.distance(e_tr.translation);
             if diff < 20.0 {
                 //hit! remove the bullet and the enemy.
-                commands.despawn(b_entity);
-                commands.despawn(e_entity);
+                commands.entity(b_entity).despawn();
+                commands.entity(e_entity).despawn();
                 hit_enemy_ids.push(enemy_id);
                 break;
             }
@@ -30,9 +33,13 @@ fn bullet_enemy_collision_system(
 }
 
 fn player_enemy_collision_system(
-    players: Query<&Transform, With<Bullet>>,
-    enemies: Query<&Transform, With<Enemy>>
+    queries: QuerySet<(
+        Query<&Transform, With<PlayerShip>>,
+        Query<&Transform, With<Enemy>>
+    )>
 ) {
+    let players = queries.q0();
+    let enemies = queries.q1();
     if let Some(player) = players.iter().next() {
         for enemy in enemies.iter() {
             let diff = player.translation.distance(enemy.translation);
