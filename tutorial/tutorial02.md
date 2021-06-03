@@ -43,12 +43,12 @@ struct Enemy {
 
 ```rust
 //Player
-spawn_bundle((
+insert_bundle((
   Position::default(),
   Player { name: "Bevy" }
 ))
 //Enemy
-spawn_bundle((
+insert_bundle((
   Position::default(),
   Enemy { category : 1 }
 ))
@@ -73,8 +73,8 @@ In ECS the class is not needed. This makes code simple and more flexible. Let's 
 > ```rust
 > struct A(i32);
 > strutc B(i32);
-> spawn_bundle(A(0)); //can't build
-> spawn_bundle((A(0), B(1))) //OK
+> insert_build(A(0)); //can't build
+> insert_bundle((A(0), B(1))) //OK
 > ```
 
 --------------------------------
@@ -112,6 +112,50 @@ In this pattern `components that include BOTH Enemy and Position` will be passed
 
 > Notice: `mut` is required in query if you want to update value.
 
+# Queries and Inserting
+
+In Bevy 0.5, some `query` and `spawn` behavior has changed.
+
+In Bevy 0.4, the following code worked as I expected.
+
+```rust
+commands.spawn_bundle((Wall, Position(1)));
+
+fn system(
+  mut query: Query<Position, With<Wall>>
+)
+```
+
+But in Bevy 0.5, `Query` needs to be match with `bundle`. 
+
+```rust
+commands.spawn()
+    .insert_bundle((Wall, Position(1)));
+
+//won't work
+fn system(
+  mut query: Query<Position, With<Wall>>
+)
+//work
+fn system(
+    mut query: Query<(&Position, &Wall)>
+)
+```
+
+If you want to use `With` in `Query`, you need to change inserting.
+
+```rust
+commands.spawn()
+    .insert(Position(1))
+    .insert(Wall);
+
+//work
+fn system(
+  mut query: Query<Position, With<Wall>>
+)
+```
+
+
 # Example
 
 Now, let's create a simple example without window, console only ECS system.
@@ -126,7 +170,7 @@ Now, let's create a simple example without window, console only ECS system.
 Declaring components is very simple in this example.(Because I want to focus *system*!)
 
 ```rust
-struct Block(i32);
+struct Block;
 
 struct Wall;
 
@@ -141,10 +185,17 @@ fn setup(
     mut commands: Commands,
 ) {
     commands.spawn()
-        .insert_bundle((Block, Position(1)))
-        .insert_bundle((Block, Position(10)))
-        .insert_bundle((Wall, Position(5)))
-        .insert_bundle((Wall, Position(20)));
+        .insert(Position(1))
+        .insert(Block);
+    commands.spawn()
+        .insert(Position(10))
+        .insert(Block);
+    commands.spawn()
+        .insert(Position(5))
+        .insert(Wall);
+    commands.spawn()
+        .insert(Position(20))
+        .insert(Wall);
 }
 
 fn main() {
@@ -184,18 +235,7 @@ The code shows
  Block-10
 ```
 
-Ok! Desired result was printed! Each position that was spawned with `Block` in `setup` was shown. 
-
-> This query means *fetch positions if the entity also has a Block component* by `With`. You can write this as follows but this fetches *unused* Block property.
-
-> ```rust
-> fn print_system(
->     query: Query<(&Position, &Block)>
-> ) {
->     for (pos, _) in query.iter() {}
-> }
-> ```
-
+Ok! Desired result was printed! Each position that was spawned with `Block` in `setup` was shown.
 
 But this code run only once. Add ScheduleRunner to do so.
 
@@ -264,11 +304,6 @@ fn collision_system(
 
 Though we can get `Commands` it's not enough. `Commands` requires `Entity` to remove it so the query of the blocks becomes as follows.
 
-```rust
-//Notice: Entity doesn't require "mut" because it derives Clone/Copy.
-blocks: Query<(Entity, &Position), With<Block>>
-```
-
 And the all of the function is like this.
 
 ```rust
@@ -307,6 +342,25 @@ When you run code the result will be
 ```
 
 Completed!
+
+### QuerySet 
+This code will work, but I suppose that using `QuerySet` is better when using multiple queries.
+When I was updating Tutorial-6 to Bevy0.5, `query-conflicting` error happened.
+
+```rust
+fn collision_system(
+    mut commands: Commands,
+    queries: QuerySet<(
+        Query<(Entity, &Position), With<Block>>,
+        Query<&Position, With<Wall>>
+    )>,
+) {
+    //Each query can be obtained with `qN()` or `qN_mut()` 
+    for (block_entity, block_pos) in queries.q0().iter() {
+        for wall_pos in queries.q1().iter() {/*...*/}
+    }
+}
+```
 
 -----------------------------------
 

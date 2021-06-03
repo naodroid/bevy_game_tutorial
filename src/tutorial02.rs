@@ -13,10 +13,17 @@ fn setup(
     mut commands: Commands,
 ) {
     commands.spawn()
-        .insert_bundle((Block, Position(1)))
-        .insert_bundle((Block, Position(10)))
-        .insert_bundle((Wall, Position(5)))
-        .insert_bundle((Wall, Position(20)));
+        .insert(Position(1))
+        .insert(Block);
+    commands.spawn()
+        .insert(Position(10))
+        .insert(Block);
+    commands.spawn()
+        .insert(Position(5))
+        .insert(Wall);
+    commands.spawn()
+        .insert(Position(20))
+        .insert(Wall);
 }
 fn print_system(
     query: Query<&Position, With<Block>>
@@ -35,11 +42,13 @@ fn move_block_system(
 }
 fn collision_system(
     mut commands: Commands,
-    blocks: Query<(Entity, &Position), With<Block>>,
-    walls: Query<&Position, With<Wall>>
+    queries: QuerySet<(
+        Query<(Entity, &Position), With<Block>>,
+        Query<&Position, With<Wall>>
+    )>,
 ) {
-    for (block_entity, block_pos) in blocks.iter() {
-        for wall_pos in walls.iter() {
+    for (block_entity, block_pos) in queries.q0().iter() {
+        for wall_pos in queries.q1().iter() {
             if block_pos.0 == wall_pos.0 {
                 commands.entity(block_entity).despawn();
             }
