@@ -77,6 +77,8 @@ fn mouse_state_system(input: Res<Input<MouseButton>>) {
 Checking keyboard is as same as mouse. Event and State are available. 
 
 ```rust
+use bevy::input::keyboard::KeyboardInput;
+
 // Keyboard
 fn keyboard_event_system(
     mut events: EventReader<KeyboardInput>,
