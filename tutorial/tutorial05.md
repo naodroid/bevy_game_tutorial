@@ -134,7 +134,7 @@ fn move_bullet_system(
         tr.y += angle.cos() * 10.;
         //despawn it if outside of the window
         if tr.x < -win_w || tr.x > win_w || tr.y < -win_h || tr.y > win_h {
-            commands.despawn(entity);
+            commands.entity(entity).despawn();
         }
     }
 }
@@ -166,8 +166,8 @@ And add this component as `Resource` to the system.
 fn main() {
     App::build()
     //other codes
-        .add_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
-        .add_resource(GunState::default())
+        .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
+        .insert_resource(GunState::default())
     //other codes
 }
 ```
