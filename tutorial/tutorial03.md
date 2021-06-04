@@ -20,7 +20,7 @@ use bevy::window::CursorMoved;
 fn mouse_event_system(
     mut events: EventReader<CursorMoved>,
 ) {
-    for ev in cursor_moved_events.iter() {
+    for ev in events.iter() {
         println!("CURSOR_MOVED: {:?}", ev.position);
     }
 }
@@ -39,6 +39,8 @@ And use `for-loop` to fetch them, because many events can be happened during the
 Click Event can be read in the same way.
 
 ```rust
+use bevy::input::mouse::MouseButtonInput;
+
 fn mouse_click_system(
     mut events: EventReader<MouseButtonInput>,
 ) {
@@ -60,7 +62,7 @@ fn mouse_click_system(
 Sometime you want to check whether the button is pressing or not *at every frame*. In this case, Event Driven pattern is bothering, you need to hold bool value(pressing or not) in yourown.
 
 ```rust
-fn mouse_state_system(input: EventReader<MouseButton>) {
+fn mouse_state_system(input: Res<Input<MouseButton>>) {
     if input.pressed(MouseButton::Left) {
         println!("MouseState:Pressed-Left");
     }
@@ -75,6 +77,8 @@ fn mouse_state_system(input: EventReader<MouseButton>) {
 Checking keyboard is as same as mouse. Event and State are available. 
 
 ```rust
+use bevy::input::keyboard::KeyboardInput;
+
 // Keyboard
 fn keyboard_event_system(
     mut events: EventReader<KeyboardInput>,
