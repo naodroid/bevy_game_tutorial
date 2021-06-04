@@ -62,7 +62,7 @@ fn mouse_click_system(
 Sometime you want to check whether the button is pressing or not *at every frame*. In this case, Event Driven pattern is bothering, you need to hold bool value(pressing or not) in yourown.
 
 ```rust
-fn mouse_state_system(input: Res<Input<MouseButton>) {
+fn mouse_state_system(input: Res<Input<MouseButton>>) {
     if input.pressed(MouseButton::Left) {
         println!("MouseState:Pressed-Left");
     }
