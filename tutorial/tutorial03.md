@@ -20,7 +20,7 @@ use bevy::window::CursorMoved;
 fn mouse_event_system(
     mut events: EventReader<CursorMoved>,
 ) {
-    for ev in cursor_moved_events.iter() {
+    for ev in events.iter() {
         println!("CURSOR_MOVED: {:?}", ev.position);
     }
 }
