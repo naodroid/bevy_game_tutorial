@@ -16,9 +16,9 @@ fn setup(
 ) {
     commands
         //add 2D Camera    
-        .insert_bundle(OrthographicCameraBundle::new_2d());
+        .spawn_bundle(OrthographicCameraBundle::new_2d());
     commands
-        .insert_bundle(SpriteBundle {
+        .spawn_bundle(SpriteBundle {
             material: materials.add(asset_server.load("triangle.png").into()),
             transform: Transform::identity(),
             sprite: Sprite::new(Vec2::new(80.0, 80.0)),
@@ -33,10 +33,10 @@ fn setup(
 
 `Transform` is very important in this chapter. It indicates where the texture is located.
 
-Thus the system we'll create requires `Transform` component with the query.(Remember chaptar 2!)
+Thus the system we'll create requires `Transform` component with the query.(Remember chapter 2!)
 
 ```rust
-fn move_system(
+fn move_player_system(
     mut query: Query<&mut Transform, With<PlayerShip>>,
 ) {
     for mut tr in query.iter_mut() {
