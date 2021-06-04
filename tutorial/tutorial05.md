@@ -166,8 +166,8 @@ And add this component as `Resource` to the system.
 fn main() {
     App::build()
     //other codes
-        .add_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
-        .add_resource(GunState::default())
+        .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
+        .insert_resource(GunState::default())
     //other codes
 }
 ```
