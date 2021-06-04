@@ -39,6 +39,8 @@ And use `for-loop` to fetch them, because many events can be happened during the
 Click Event can be read in the same way.
 
 ```rust
+use bevy::input::mouse::MouseButtonInput;
+
 fn mouse_click_system(
     mut events: EventReader<MouseButtonInput>,
 ) {
