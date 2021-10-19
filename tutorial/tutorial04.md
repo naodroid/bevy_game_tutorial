@@ -23,7 +23,8 @@ fn setup(
             transform: Transform::identity(),
             sprite: Sprite::new(Vec2::new(80.0, 80.0)),
             ..Default::default()
-        });
+        })
+        .insert(PlayerShip);
 }
 ```
 
