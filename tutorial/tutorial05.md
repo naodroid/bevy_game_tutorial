@@ -55,7 +55,6 @@ The parameters of the function will be
 fn fire_bullet_system(
     mut commands: Commands,
     player: Query<&Transform, With<PlayerShip>>,
-    mut gun_state: ResMut<GunState>,
     input: Res<Input<MouseButton>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     asset_server: ResMut<AssetServer>,
